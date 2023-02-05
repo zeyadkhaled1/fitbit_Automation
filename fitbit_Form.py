@@ -1,32 +1,65 @@
 from playwright.sync_api import sync_playwright, Playwright, TimeoutError as PlaywrightTimeoutError
-import time
-import json
+import random
 
 from discord import SyncWebhook, Embed
 
+def generate_japanese_phone_number():
+  area_code = str(random.randint(100, 999))
+  first_part = str(random.randint(100, 999)).zfill(3)
+  second_part = str(random.randint(1000, 9999)).zfill(4)
+  return int(f"{area_code}{first_part}{second_part}")
 
-def automation_process(playwright: Playwright, list):
+
+def generate_address():
+    prefectures = ['Hokkaido', 'Aomori', 'Iwate', 'Miyagi', 'Akita', 'Yamagata',               'Fukushima', 'Ibaraki', 'Tochigi', 'Gunma', 'Saitama', 'Chiba',               'Tokyo', 'Kanagawa', 'Niigata', 'Toyama', 'Ishikawa', 'Fukui',               'Yamanashi', 'Nagano', 'Gifu', 'Shizuoka', 'Aichi', 'Mie',               'Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama', 'Tottori',               'Shimane', 'Okayama', 'Hiroshima', 'Yamaguchi', 'Tokushima', 'Kagawa',               'Ehime', 'Kochi', 'Fukuoka', 'Saga', 'Nagasaki', 'Kumamoto', 'Oita',               'Miyazaki', 'Kagoshima', 'Okinawa']
+
+    cities = ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Kobe', 'Kyoto',          'Fukuoka', 'Sendai', 'Shizuoka', 'Hiroshima', 'Kawasaki', 'Saitama',          'Yonago', 'Hamamatsu', 'Matsuyama', 'Okayama', 'Fukushima', 'Asahikawa']
+
+    streets = ['Main St', 'High St', 'Park Ave', 'Maple St', 'Oak St', 'Pine Ave',           'Cedar Blvd', 'Elm St', 'Washington Ave', 'Madison St', 'Jefferson Ave',           'Lincoln St', 'Adams St', 'Roosevelt Ave']
+    
+    prefecture = random.choice(prefectures)
+    city = random.choice(cities)
+    street = random.choice(streets)
+    house_number = str(random.randint(1, 999))
+    address_line_1 = street + ' ' + house_number
+    address_line_2 = city + ', ' + prefecture
+    zip_code = str(random.randint(10000, 99999))
+    return  address_line_1,address_line_2,zip_code,city,prefecture
+
+def Discord_webhook_Form_Filling(webhook,refrence,address_line_1,first_name,last_name, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number) ->None:
+            webhook = SyncWebhook.from_url(
+                'https://discordapp.com/api/webhooks/1068494626769621022/wlKEYJjzbxgVkwIyHZgE6D9lEoFTbiP9BSnEtxxByCauPa5PXHEwgOK555YpYZyTysl7')
+            embed = Embed(title="FitBotJP", color=0xFF5733)
+            embed.add_field(name="Submitted Form", value='', inline=False)
+            embed.add_field(name="Email", value=fitbit_email, inline=True)
+            embed.add_field(name="Ref", value=refrence)
+            embed.add_field(name="First name", value=first_name, inline=True)
+            embed.add_field(name="Last name", value=last_name)
+            embed.add_field(name="Address", value=address_line_1)
+            embed.add_field(name="Address2", value=address_line_2)
+            embed.add_field(name="phone", value=phone_number)
+            embed.add_field(name="Paypal Email", value=paypal_email)
+            embed.add_field(name="State", value=state)
+            embed.add_field(name="City", value=city)
+            embed.add_field(name="Zip_code", value=postal_code)
+            # Send a message to the server
+            webhook.send(embed=embed)
+
+
+def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
     x = 0
     while True:
         try:
-            first_name = list[0]
-            last_name = list[1]
-            address_line_1 = list[2]
-            address_line_2 = list[3]
-            postal_code = list[4]
-            city = list[5]
-            state = list[6]
-            fitbit_email = list[7]
-            paypal_email = list[8]
-            phone_number = list[9]
-            address_to_search = list[10]
             page.goto("https://www.fitbitionic.expertinquiry.com/")
             page.get_by_label("Country").select_option(value='JP')
             with page.expect_popup() as page1_info:
                 page.get_by_role("link", name="Register").click()
             page1 = page1_info.value
             page1.get_by_role(
-                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.click()
+                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.click(timeout=1200000)
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.fill(first_name)
             page1.get_by_role(
@@ -92,19 +125,7 @@ def automation_process(playwright: Playwright, list):
                 'https://discord.com/api/webhooks/1068436993559777390/jnpU5fL_qs182ARxvqeRzSR1Ywpg9mhiWdxhSc1jMAewTNFJNWCo8SClRcpxEv2m0wPe')
             refrence = page1.locator(
                 '//*[@id="pageContainer"]/div[5]/div/div/div/div[4]/div[1]/span[2]').inner_text()
-            embed = Embed(title="FitBotJP", color=0xFF5733)
-            embed.add_field(name="Submitted Form", value='', inline=False)
-            embed.add_field(name="Email", value=fitbit_email, inline=True)
-            embed.add_field(name="Ref", value=refrence)
-            embed.add_field(name="First name", value=first_name, inline=True)
-            embed.add_field(name="Last name", value=last_name)
-            embed.add_field(name="Address", value=address_line_1)
-            embed.add_field(name="phone", value=phone_number)
-            embed.add_field(name="Paypal Email", value=paypal_email)
-            embed.add_field(name="State", value=state)
-            embed.add_field(name="City", value=city)
-            # Send a message to the server
-            webhook.send(embed=embed)
+            Discord_webhook_Form_Filling(webhook,refrence,address_line_1,first_name,last_name,address_line_2,postal_code,city,state,fitbit_email,paypal_email,phone_number)
             page1.close()
             break
         except PlaywrightTimeoutError:
@@ -118,28 +139,6 @@ def automation_process(playwright: Playwright, list):
 
 
 #
-start = time.time()
-
-playwright = sync_playwright().start()
-browser = playwright.chromium.launch(
-    headless=False)
-ua = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/69.0.3497.100 Safari/537.36"
-)
-page = browser.new_page(user_agent=ua)
-# Reading Data From Json
-f = open('data.json')
-data = json.load(f)
-for val in data["all_entries"]:
-    data_arr = []
-    for value in val.values():
-        data_arr.append(value)
-    automation_process(playwright, data_arr)
-
-end = time.time()
-x = end-start
-playwright.stop()
-print(
-    f"Finished in {int(x/3600)} hours ,{int(((x/3600)-int((x/3600)))*60)} minutes")
+def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search):
+   with sync_playwright() as playwright:
+        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search)

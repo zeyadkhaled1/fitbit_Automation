@@ -1,0 +1,9 @@
+import random
+
+def generate_japanese_phone_number():
+  area_code = str(random.randint(100, 999))
+  first_part = str(random.randint(100, 999)).zfill(3)
+  second_part = str(random.randint(1000, 9999)).zfill(4)
+  return int(f"{area_code}{first_part}{second_part}")
+
+print(generate_japanese_phone_number())

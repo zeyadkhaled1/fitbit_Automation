@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem, QMessageBox
 from data import *
 from PyQt5.QtCore import Qt
 from functools import partial
-from fitbit_Account import generate_year_of_birth,generate_Japanese_name,generate_pounds,generate_centimeters
+from fitbit_Account import generate_year_of_birth,generate_Japanese_name,generate_pounds,generate_centimeters,main_account_creation
+from fitbit_Form import generate_address,generate_japanese_phone_number,main_fill_form
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -184,9 +185,9 @@ class Ui_MainWindow(object):
         self.phone = QtWidgets.QTextEdit(self.tab_2)
         self.phone.setGeometry(QtCore.QRect(690, 330, 231, 41))
         self.phone.setObjectName("phone")
-        self.generatedPhone = QtWidgets.QTextEdit(self.tab_2)
-        self.generatedPhone.setGeometry(QtCore.QRect(690, 530, 231, 41))
-        self.generatedPhone.setObjectName("generatedPhone")
+        # self.generatedPhone = QtWidgets.QTextEdit(self.tab_2)
+        # self.generatedPhone.setGeometry(QtCore.QRect(690, 530, 231, 41))
+        # self.generatedPhone.setObjectName("generatedPhone")
         self.city = QtWidgets.QTextEdit(self.tab_2)
         self.city.setGeometry(QtCore.QRect(690, 480, 231, 41))
         self.city.setObjectName("city")
@@ -241,12 +242,12 @@ class Ui_MainWindow(object):
         font.setPointSize(13)
         self.label_17.setFont(font)
         self.label_17.setObjectName("label_17")
-        self.label_18 = QtWidgets.QLabel(self.tab_2)
-        self.label_18.setGeometry(QtCore.QRect(510, 540, 171, 31))
+        # self.label_18 = QtWidgets.QLabel(self.tab_2)
+        # self.label_18.setGeometry(QtCore.QRect(510, 540, 171, 31))
         font = QtGui.QFont()
         font.setPointSize(13)
-        self.label_18.setFont(font)
-        self.label_18.setObjectName("label_18")
+        # self.label_18.setFont(font)
+        # self.label_18.setObjectName("label_18")
         self.label_19 = QtWidgets.QLabel(self.tab_2)
         self.label_19.setGeometry(QtCore.QRect(510, 340, 111, 21))
         font = QtGui.QFont()
@@ -282,7 +283,7 @@ class Ui_MainWindow(object):
         self.ch7.setText("")
         self.ch7.setObjectName("ch7")
         self.ch8 = QtWidgets.QCheckBox(self.tab_2)
-        self.ch8.setGeometry(QtCore.QRect(940, 530, 21, 41))
+        self.ch8.setGeometry(QtCore.QRect(940, 330, 21, 41))
         self.ch8.setText("")
         self.ch8.setObjectName("ch8")
         self.insert_2 = QtWidgets.QPushButton(self.tab_2)
@@ -368,7 +369,7 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "Last name"))
         self.label_16.setText(_translate("MainWindow", "Address Line 2"))
         self.label_17.setText(_translate("MainWindow", "City"))
-        self.label_18.setText(_translate("MainWindow", "Generated Phone"))
+        # self.label_18.setText(_translate("MainWindow", "Generated Phone"))
         self.label_19.setText(_translate("MainWindow", "Phone"))
         self.insert_2.setText(_translate("MainWindow", "Insert"))
         self.delete_3.setText(_translate("MainWindow", "Delete"))
@@ -421,10 +422,18 @@ class Ui_MainWindow(object):
         self.lastName.setDisabled(self.ch5.isChecked())
         self.addressLine2.setDisabled(self.ch6.isChecked())
         self.city.setDisabled(self.ch7.isChecked())
-        self.generatedPhone.setDisabled(self.ch8.isChecked())
+        self.phone.setDisabled(self.ch8.isChecked())
         self.firstName_2.setDisabled(self.ch9.isChecked())
         self.lastname_2.setDisabled(self.ch10.isChecked())
 
+    def delete_from_table2(self):
+        rowCount = self.table2.rowCount()
+        for index in range(rowCount-1,0,-1):
+            if (self.table2.item(index, 0).checkState() == Qt.Checked):
+                self.table2.removeRow(index)
+        if(self.table2.item(0, 0).checkState() == Qt.Checked):
+            self.table2.removeRow(0)
+    
     def transferDataToTable2(self):
         rowCount = self.table1.rowCount()
         for index in range (self.table1.rowCount()):
@@ -486,23 +495,30 @@ class Ui_MainWindow(object):
             msgBox.setWindowTitle("Error Message")
             msgBox.exec_()
             return
-        # Generating Random Data if not Added
-        if (self.ch9.checkState()):
-            self.data.first_name1=generate_Japanese_name()
-        else:
-            self.data.first_name1 = self.firstName_2.toPlainText()
-        if (self.ch10.checkState()):
-            self.data.last_name1=generate_Japanese_name()
-        else:
-            self.data.last_name1 = self.lastname_2.toPlainText()
-        # 
+     
         self.data.country = self.country.currentText()
         self.data.table1_emails = []
         for val in range(self.table1.rowCount()):
             if (self.table1.item(val, 0).checkState() == Qt.Checked):
                 self.data.table1_emails.append(self.table1.item(val, 1).text())
         self.data.password = self.password.toPlainText()
-        
+        # Automation process
+        try:
+            for email in self.data.table1_emails:
+                # Generating Random Data if not Added
+                if (self.ch9.checkState()):
+                    self.data.first_name1=generate_Japanese_name()
+                else:
+                    self.data.first_name1 = self.firstName_2.toPlainText()
+                if (self.ch10.checkState()):
+                    self.data.last_name1=generate_Japanese_name()
+                else:
+                    self.data.last_name1 = self.lastname_2.toPlainText()
+                # 
+                main_account_creation(email,self.data.password,self.data.first_name1,self.data.last_name1,generate_year_of_birth(),generate_centimeters(),generate_pounds())
+        except:
+            pass
+        # 
         self.transferDataToTable2()
         
 
@@ -511,9 +527,11 @@ class Ui_MainWindow(object):
         #     print(i)
 
     def submitButton2(self):
-        if((self.paypalEmail.toPlainText() == ""  and self.paypalEmail.isEnabled())or self.phone.toPlainText()== "" or (self.firstName.toPlainText() == "" and not self.ch1.checkState()) or (self.AddressLine1.toPlainText() == "" and not self.ch2.checkState())
+        if((self.paypalEmail.toPlainText() == ""  and self.paypalEmail.isEnabled()) or (self.firstName.toPlainText() == "" and not self.ch1.checkState()) or (self.AddressLine1.toPlainText() == "" and not self.ch2.checkState())
         or (self.postCode.toPlainText() == "" and not self.ch3.checkState()) or (self.State.toPlainText() == "" and not self.ch4.checkState()) or (self.lastName.toPlainText() == "" and not self.ch5.checkState()) or
-                (self.addressLine2.toPlainText() == "" and not self.ch6.checkState()) or (self.city.toPlainText() == "" and not self.ch7.checkState()) or (self.generatedPhone.toPlainText() == "" and not self.ch8.checkState())):
+                (self.addressLine2.toPlainText() == "" and not self.ch6.checkState())
+                 or (self.city.toPlainText() == "" and not self.ch7.checkState())
+                 or (self.phone.toPlainText() == "" and not self.ch8.checkState())):
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Information)
             msgBox.setText("Please Enter the rest of data or Disable them!")
@@ -524,19 +542,49 @@ class Ui_MainWindow(object):
         for val in range(self.table2.rowCount()):
             if (self.table2.item(val, 0).checkState() == Qt.Checked):
                 self.data.table2_emails.append(self.table2.item(val, 1).text())
-        for i in self.data.table2_emails :
-            print(i)
-        self.data.payment_method = self.paypalMethod.currentText()
-        self.data.payment_email = self.paypalEmail.toPlainText()
-        self.data.phone = self.phone.toPlainText()
-        self.data.first_name2 = self.firstName.toPlainText()
-        self.data.last_name2 = self.lastName.toPlainText()
-        self.data.address_line1 = self.AddressLine1.toPlainText()
-        self.data.address_line2 = self.addressLine2.toPlainText()
-        self.data.postcode = self.postCode.toPlainText()
-        self.data.city = self.city.toPlainText()
-        self.data.state = self.State.toPlainText()
-        self.data.generated_phone = self.generatedPhone.toPlainText()
+        # for i in self.data.table2_emails :
+        #     print(i)
+        #Generate random data if not stated
+        for email in self.data.table2_emails:
+            # Generating Random Data at first of each loop
+            address_line_1,address_line_2,zip_code,city,prefecture=generate_address()
+            #Generate Data in not Stated
+            if (self.ch1.checkState()):
+                        self.data.first_name2=generate_Japanese_name()
+            else:
+                    self.data.first_name2 = self.firstName_2
+            if (self.ch2.checkState()):
+                        self.data.address_line1=address_line_1
+            else:
+                    self.data.address_line1 = self.AddressLine1.toPlainText()
+            if (self.ch3.checkState()):
+                        self.data.postcode=zip_code
+            else:
+                    self.data.postcode = self.postCode.toPlainText()
+            if (self.ch4.checkState()):
+                        self.data.state=prefecture
+            else:
+                    self.data.state = self.State.toPlainText()
+            if (self.ch5.checkState()):
+                        self.data.last_name2=generate_Japanese_name()
+            else:
+                    self.data.state = self.State.toPlainText()
+            if (self.ch6.checkState()):
+                        self.data.address_line2=address_line_2
+            else:
+                    self.data.address_line2 = self.addressLine2.toPlainText()
+            if (self.ch7.checkState()):
+                        self.data.city=city
+            else:
+                    self.data.city = self.city.toPlainText()
+            if (self.ch8.checkState()):
+                        self.data.phone=generate_japanese_phone_number()
+            else:
+                    self.data.phone = self.phone.toPlainText()
+            self.data.payment_email=self.paypalEmail.toPlainText()
+            main_fill_form(self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,self.data.postcode,self.data.city,self.data.state,email,self.data.payment_email,self.data.phone,self.data.address_line1)
+        self.delete_from_table2()
+        
 
 
 

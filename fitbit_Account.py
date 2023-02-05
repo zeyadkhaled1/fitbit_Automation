@@ -1,18 +1,23 @@
 from playwright.sync_api import sync_playwright, Playwright, TimeoutError as PlaywrightTimeoutError
 import random
 
-# def automation_process():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(
-#             headless=False)
-#         ua = (
-#             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-#             "AppleWebKit/537.36 (KHTML, like Gecko) "
-#             "Chrome/69.0.3497.100 Safari/537.36"
-#         )
-#         page = browser.new_page(user_agent=ua)
-#         page.goto(
-#             "http://agencies.monroecountypa.gov/monroepa_prod/search/commonsearch.aspx?mode=realprop", wait_until="load")
+from discord import SyncWebhook, Embed
+
+
+def Discord_webhook_Account_Creation(email, password, first_name, last_name, year, centimeters, pounds) ->None:
+    webhook = SyncWebhook.from_url(
+                'https://discordapp.com/api/webhooks/1068494626769621022/wlKEYJjzbxgVkwIyHZgE6D9lEoFTbiP9BSnEtxxByCauPa5PXHEwgOK555YpYZyTysl7')
+    embed = Embed(title="FitBotJP", color=0xFF5733)
+    embed.add_field(name="Account Creation", value='', inline=False)
+    embed.add_field(name="Email", value=email, inline=True)
+    embed.add_field(name="Password", value=password)
+    embed.add_field(name="First name", value=first_name, inline=True)
+    embed.add_field(name="Last name", value=last_name)
+    embed.add_field(name="Year", value=str(year))
+    embed.add_field(name="Height", value=str(centimeters))
+    embed.add_field(name="Weight", value=str(pounds))
+    # Send a message to the server
+    webhook.send(embed=embed)
 
 
 def generate_Japanese_name() -> str:
@@ -49,15 +54,15 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
-    # page.goto("https://quik.email/en")
-    # page.wait_for_timeout(20000)
-    # email = page.locator("#trsh_mail").input_value()
-    # print(email)
+    page.goto("https://quik.email/en")
+    page.wait_for_timeout(20000)
+    email_test = page.locator("#trsh_mail").input_value()
+    print(email)
     page1 = context.new_page()
     page1.goto(
         f"https://accounts.fitbit.com/signup?targetUrl=https%3A%2F%2Fwww.fitbit.com%2Fglobal%2Fjp%2Fhome")
     page1.get_by_placeholder("Your email address").click()
-    page1.get_by_placeholder("Your email address").fill(email)
+    page1.get_by_placeholder("Your email address").fill(email_test)
     page1.get_by_placeholder("Choose your password").click()
     page1.get_by_placeholder("Choose your password").fill(
         password)
@@ -82,7 +87,7 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
     page.wait_for_timeout(2000)
     page1.get_by_placeholder("Year").click()
     page.wait_for_timeout(2000)
-    page1.get_by_placeholder("Year").fill(year)
+    page1.get_by_placeholder("Year").fill(str(year))
     page.wait_for_timeout(2000)
     page1.get_by_role("button", name="Continue").click()
     page.wait_for_timeout(2000)
@@ -90,23 +95,23 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
         "#height-system").get_by_role("combobox").select_option("METRIC")
     page1.get_by_placeholder("Centimeters").click()
     page.wait_for_timeout(2000)
-    page1.get_by_placeholder("Centimeters").fill(centimeters)
+    page1.get_by_placeholder("Centimeters").fill(str(centimeters))
     page.wait_for_timeout(2000)
     page1.get_by_placeholder("Pound").click()
     page.wait_for_timeout(2000)
-    page1.get_by_placeholder("Pound").fill(pounds)
+    page1.get_by_placeholder("Pound").fill(str(pounds))
     page.wait_for_timeout(2000)
     page1.locator("#gender").get_by_role("combobox").select_option("MALE")
     page.wait_for_timeout(2000)
     page1.get_by_role("button", name="Create Account").click()
     page.wait_for_timeout(7000)
-
+    Discord_webhook(email_test, password, first_name, last_name, year, centimeters, pounds)
     # ---------------------
     context.close()
     browser.close()
 
 
-def main(email, password, first_name, last_name, year, centimeters, pounds):
+def main_account_creation(email, password, first_name, last_name, year, centimeters, pounds):
     with sync_playwright() as playwright:
         run(playwright, email, password, first_name,
             last_name, year, centimeters, pounds)

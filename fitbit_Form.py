@@ -10,7 +10,55 @@ def generate_japanese_phone_number():
   return int(f"{area_code}{first_part}{second_part}")
 
 
-def generate_address():
+
+def generate_uk_address():
+    counties = [
+        "Avon", "Bedfordshire", "Berkshire", "Borders", "Buckinghamshire",
+        "Cambridgeshire", "Central", "Cheshire", "Cleveland", "Clwyd",
+        "Cornwall", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham",
+        "Dyfed", "East Sussex", "Essex", "Gloucestershire", "Greater London",
+        "Greater Manchester", "Gwent", "Gwynedd County", "Hampshire", "Herefordshire",
+        "Hertfordshire", "Highlands and Islands", "Humberside", "Isle of Wight",
+        "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside",
+        "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland",
+        "Nottinghamshire", "Oxfordshire", "Powys", "Rutland", "Shropshire",
+        "Somerset", "South Glamorgan", "South Yorkshire", "Staffordshire",
+        "Strathclyde", "Suffolk", "Surrey", "Tayside", "Tyne and Wear",
+        "Warwickshire", "West Glamorgan", "West Midlands", "West Sussex",
+        "West Yorkshire", "Wiltshire"
+    ]
+
+    cities = [
+        "Belfast", "Birmingham", "Bradford", "Brighton", "Bristol", "Cambridge",
+        "Canterbury", "Carlisle", "Chelmsford", "Chester", "Chichester",
+        "Coventry", "Derby", "Durham", "Ely", "Exeter", "Gloucester",
+        "Hereford", "Kingston upon Hull", "Lancaster", "Leeds", "Leicester",
+        "Lichfield", "Lincoln", "Liverpool", "City of London", "Manchester",
+        "Newcastle upon Tyne", "Norwich", "Nottingham", "Oxford", "Peterborough",
+        "Plymouth", "Portsmouth", "Preston", "Ripon", "Salford", "Salisbury",
+        "Sheffield", "Southampton", "St Albans", "Stoke-on-Trent", "Sunderland",
+        "Truro", "Wakefield", "Wells", "Westminster", "Winchester", "Wolverhampton",
+        "Worcester", "York"
+    ]
+
+    streets = [
+        "Main St", "High St", "Park Ave", "Maple St", "Oak St", "Pine Ave",
+        "Cedar Blvd", "Elm St", "Washington Ave", "Madison St", "Jefferson Ave",
+        "Lincoln St", "Adams St", "Roosevelt Ave"
+    ]
+    
+    county = random.choice(counties)
+    city = random.choice(cities)
+    street = random.choice(streets)
+    house_number = str(random.randint(1, 999))
+    address_line_1 = house_number + ' ' + street
+    address_line_2 = city + ', ' + county
+    zip_code = str(random.randint(10000, 99999))
+    return  address_line_1,address_line_2,zip_code,city,county
+
+
+
+def generate_japanese_address():
     prefectures = ['Hokkaido', 'Aomori', 'Iwate', 'Miyagi', 'Akita', 'Yamagata',               'Fukushima', 'Ibaraki', 'Tochigi', 'Gunma', 'Saitama', 'Chiba',               'Tokyo', 'Kanagawa', 'Niigata', 'Toyama', 'Ishikawa', 'Fukui',               'Yamanashi', 'Nagano', 'Gifu', 'Shizuoka', 'Aichi', 'Mie',               'Shiga', 'Kyoto', 'Osaka', 'Hyogo', 'Nara', 'Wakayama', 'Tottori',               'Shimane', 'Okayama', 'Hiroshima', 'Yamaguchi', 'Tokushima', 'Kagawa',               'Ehime', 'Kochi', 'Fukuoka', 'Saga', 'Nagasaki', 'Kumamoto', 'Oita',               'Miyazaki', 'Kagoshima', 'Okinawa']
 
     cities = ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Kobe', 'Kyoto',          'Fukuoka', 'Sendai', 'Shizuoka', 'Hiroshima', 'Kawasaki', 'Saitama',          'Yonago', 'Hamamatsu', 'Matsuyama', 'Okayama', 'Fukushima', 'Asahikawa']
@@ -26,9 +74,8 @@ def generate_address():
     zip_code = str(random.randint(10000, 99999))
     return  address_line_1,address_line_2,zip_code,city,prefecture
 
-def Discord_webhook_Form_Filling(webhook,refrence,address_line_1,first_name,last_name, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number) ->None:
-            webhook = SyncWebhook.from_url(
-                'https://discordapp.com/api/webhooks/1068494626769621022/wlKEYJjzbxgVkwIyHZgE6D9lEoFTbiP9BSnEtxxByCauPa5PXHEwgOK555YpYZyTysl7')
+def Discord_webhook_Form_Filling(webhook_url,refrence,address_line_1,first_name,last_name, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number) ->None:
+            webhook = SyncWebhook.from_url(webhook_url)
             embed = Embed(title="FitBotJP", color=0xFF5733)
             embed.add_field(name="Submitted Form", value='', inline=False)
             embed.add_field(name="Email", value=fitbit_email, inline=True)
@@ -46,7 +93,7 @@ def Discord_webhook_Form_Filling(webhook,refrence,address_line_1,first_name,last
             webhook.send(embed=embed)
 
 
-def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search) -> None:
+def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
@@ -121,11 +168,9 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
             page1.locator("#top-submit").click()
             page.wait_for_timeout(10000)
             # Create a new webhook
-            webhook = SyncWebhook.from_url(
-                'https://discord.com/api/webhooks/1068436993559777390/jnpU5fL_qs182ARxvqeRzSR1Ywpg9mhiWdxhSc1jMAewTNFJNWCo8SClRcpxEv2m0wPe')
             refrence = page1.locator(
                 '//*[@id="pageContainer"]/div[5]/div/div/div/div[4]/div[1]/span[2]').inner_text()
-            Discord_webhook_Form_Filling(webhook,refrence,address_line_1,first_name,last_name,address_line_2,postal_code,city,state,fitbit_email,paypal_email,phone_number)
+            Discord_webhook_Form_Filling(webhook_url,refrence,address_line_1,first_name,last_name,address_line_2,postal_code,city,state,fitbit_email,paypal_email,phone_number)
             page1.close()
             break
         except PlaywrightTimeoutError:
@@ -136,9 +181,11 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
             else:
                 print("Timeout! Retry")
             continue
+        except:
+            pass
 
 
 #
-def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search):
+def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url):
    with sync_playwright() as playwright:
-        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search)
+        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url)

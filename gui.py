@@ -16,7 +16,7 @@ from data import *
 from PyQt5.QtCore import Qt,QThread,pyqtSignal
 from functools import partial
 from fitbit_Account import generate_year_of_birth,generate_Japanese_name,generate_pounds,generate_centimeters,main_account_creation,generate_password,generate_English_name
-from fitbit_Form import generate_japanese_address,generate_japanese_phone_number,main_fill_form
+from fitbit_Form import generate_japanese_address,generate_japanese_phone_number,main_fill_form,generate_uk_address,generate_uk_phone_number
 
 
 
@@ -190,11 +190,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.label_2.setText("Accounts")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
-        self.paypalMethod = QtWidgets.QComboBox(self.tab_2)
-        self.paypalMethod.setGeometry(QtCore.QRect(180, 280, 291, 31))
-        self.paypalMethod.setObjectName("paypalMethod")
-        self.paypalMethod.addItem("")
-        self.paypalMethod.addItem("")
+        self.paymentMethod = QtWidgets.QComboBox(self.tab_2)
+        self.paymentMethod.setGeometry(QtCore.QRect(180, 280, 291, 31))
+        self.paymentMethod.setObjectName("paymentMethod")
+        self.paymentMethod.addItem("")
+        self.paymentMethod.addItem("")
         self.country_tab2 = QtWidgets.QComboBox(self.tab_2)
         self.country_tab2.setGeometry(QtCore.QRect(690,280, 231, 31))
         self.country_tab2.setObjectName("country_tab2")
@@ -409,8 +409,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         item.setText(_translate("self", "Selected"))
         item = self.table2.horizontalHeaderItem(1)
         item.setText(_translate("self", "Emails"))
-        self.paypalMethod.setItemText(0, _translate("self", "PayPal"))
-        self.paypalMethod.setItemText(1, _translate("self", "Google eGifts"))
+        self.paymentMethod.setItemText(0, _translate("self", "PayPal"))
+        self.paymentMethod.setItemText(1, _translate("self", "Google eGifts"))
         self.country_tab2.setItemText(0, _translate("self", "Japan"))
         self.country_tab2.setItemText(1, _translate("self", "United Kingdom"))
         self.country_tab2.setItemText(2, _translate("self", "Canda"))
@@ -451,39 +451,39 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.insert_2.clicked.connect(partial(self.isInsert, self.table2))
         self.delete_3.clicked.connect(partial(self.delete_row, self.table2))
         self.load_2.clicked.connect(partial(self.browse_file, self.table2))
-        self.paypalMethod.currentTextChanged.connect(self.current_text_changed)
+        self.paymentMethod.currentTextChanged.connect(self.current_text_changed)
+        self.country_tab2.currentTextChanged.connect(self.current_text_changed_country_tab2)
         self.submit1.clicked.connect(self.submitButton1)
         self.submit2.clicked.connect(self.submitButton2)
-        self.ch1.stateChanged.connect(self.isCheck)
-        self.ch2.stateChanged.connect(self.isCheck)
-        self.ch3.stateChanged.connect(self.isCheck)
-        self.ch4.stateChanged.connect(self.isCheck)
-        self.ch5.stateChanged.connect(self.isCheck)
-        self.ch6.stateChanged.connect(self.isCheck)
-        self.ch7.stateChanged.connect(self.isCheck)
-        self.ch8.stateChanged.connect(self.isCheck)
-        self.ch9.stateChanged.connect(self.isCheck)
-        self.ch10.stateChanged.connect(self.isCheck)
-        self.ch11.stateChanged.connect(self.isCheck)
+        self.ch1.stateChanged.connect(lambda checked:self.firstName.setDisabled(checked))
+        self.ch2.stateChanged.connect(lambda checked:self.AddressLine1.setDisabled(checked))
+        self.ch3.stateChanged.connect(lambda checked:self.postCode.setDisabled(checked))
+        self.ch4.stateChanged.connect(lambda checked:self.State.setDisabled(checked))
+        self.ch5.stateChanged.connect(lambda checked:self.lastName.setDisabled(checked))
+        self.ch6.stateChanged.connect(lambda checked:self.addressLine2.setDisabled(checked))
+        self.ch7.stateChanged.connect(lambda checked:self.city.setDisabled(checked))
+        self.ch8.stateChanged.connect(lambda checked:self.phone.setDisabled(checked))
+        self.ch9.stateChanged.connect(lambda checked:self.firstName_2.setDisabled(checked))
+        self.ch10.stateChanged.connect(lambda checked:self.lastname_2.setDisabled(checked))
+        self.ch11.stateChanged.connect(lambda checked:self.password.setDisabled(checked))
 
     def current_text_changed(self):
-        if(self.paypalMethod.currentText() == "Google eGifts"):
-            self.paypalEmail.setDisabled(True)
-        else:
+        if(self.paymentMethod.currentText() == "PayPal"):
             self.paypalEmail.setDisabled(False)
-
-    def isCheck(self):
-        self.firstName.setDisabled(self.ch1.isChecked())
-        self.AddressLine1.setDisabled(self.ch2.isChecked())
-        self.postCode.setDisabled(self.ch3.isChecked())
-        self.State.setDisabled(self.ch4.isChecked())
-        self.lastName.setDisabled(self.ch5.isChecked())
-        self.addressLine2.setDisabled(self.ch6.isChecked())
-        self.city.setDisabled(self.ch7.isChecked())
-        self.phone.setDisabled(self.ch8.isChecked())
-        self.firstName_2.setDisabled(self.ch9.isChecked())
-        self.lastname_2.setDisabled(self.ch10.isChecked())
-        self.password.setDisabled(self.ch11.isChecked())
+        else:
+            self.paypalEmail.setDisabled(True)
+    
+    def current_text_changed_country_tab2(self):
+        if(self.country_tab2.currentText() == "United Kingdom"):
+            self.paymentMethod.setItemText(1,"MasterCard Debit Card")
+            self.State.setDisabled(True)
+            self.ch4.setDisabled(True)
+        elif (self.country_tab2.currentText() == "Japan"):
+            self.paymentMethod.setItemText(1,"Google eGifts")
+            self.State.setDisabled(False)
+            self.ch4.setDisabled(False)
+            
+        
 
     def delete_from_table2(self):
         rowCount = self.table2.rowCount()
@@ -631,8 +631,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.threads.append(thread)
         thread.start()
         
-    def start_thread2(self,table_2_data,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook):
-        thread = FunctionThread(main_fill_form,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook)
+    def start_thread2(self,table_2_data,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country):
+        thread = FunctionThread(main_fill_form,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country)
         thread.finished.connect(partial(self.increment_var_progress2,table_2_data))
         self.threads.append(thread)
         thread.start()
@@ -707,7 +707,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def submitButton2(self):
         if((self.paypalEmail.toPlainText() == ""  and self.paypalEmail.isEnabled()) or (self.firstName.toPlainText() == "" and not self.ch1.checkState()) or (self.AddressLine1.toPlainText() == "" and not self.ch2.checkState())
-        or (self.postCode.toPlainText() == "" and not self.ch3.checkState()) or (self.State.toPlainText() == "" and not self.ch4.checkState()) or (self.lastName.toPlainText() == "" and not self.ch5.checkState()) or
+        or (self.postCode.toPlainText() == "" and not self.ch3.checkState()) or (self.State.toPlainText() == "" and not self.ch4.checkState() and self.State.isEnabled()) or (self.lastName.toPlainText() == "" and not self.ch5.checkState()) or
                 (self.addressLine2.toPlainText() == "" and not self.ch6.checkState())
                  or (self.city.toPlainText() == "" and not self.ch7.checkState())
                  or (self.phone.toPlainText() == "" and not self.ch8.checkState())
@@ -732,10 +732,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         #Generate random data if not stated
         for email in self.data.table2_emails:
             # Generating Random Data at first of each loop
-            address_line_1,address_line_2,zip_code,city,prefecture=generate_japanese_address()
+            if self.country_tab2.currentText() == "Japan":
+                address_line_1,address_line_2,zip_code,city,prefecture=generate_japanese_address()
+            elif self.country_tab2.currentText() == "United Kingdom":
+                address_line_1,address_line_2,zip_code,city,prefecture=generate_uk_address()
             #Generate Data in not Stated
-            if (self.ch1.checkState()):
+            if (self.ch1.checkState() and self.country_tab2.currentText() == "Japan"):
                         self.data.first_name2=generate_Japanese_name()
+            elif (self.ch1.checkState() and self.country_tab2.currentText() == "United Kingdom"):
+                        self.data.first_name2=generate_English_name()
             else:
                     self.data.first_name2 = self.firstName_2.toPlainText()
             if (self.ch2.checkState()):
@@ -750,8 +755,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         self.data.state=prefecture
             else:
                     self.data.state = self.State.toPlainText()
-            if (self.ch5.checkState()):
+            if (self.ch5.checkState() and self.country_tab2.currentText() == "Japan"):
                         self.data.last_name2=generate_Japanese_name()
+            elif (self.ch5.checkState() and self.country_tab2.currentText() == "United Kingdom"):
+                        self.data.last_name2=generate_English_name()          
             else:
                     self.data.state = self.State.toPlainText()
             if (self.ch6.checkState()):
@@ -767,7 +774,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             else:
                     self.data.phone = self.phone.toPlainText()
             self.data.payment_email=self.paypalEmail.toPlainText()
-            self.start_thread2(self.data.table2_emails,self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,str(self.data.postcode),self.data.city,self.data.state,email,self.data.payment_email,str(self.data.phone),self.data.address_line1,self.formWebhook.toPlainText())
+            self.start_thread2(self.data.table2_emails,self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,str(self.data.postcode),self.data.city,self.data.state,email,self.data.payment_email,str(self.data.phone),self.data.address_line1,self.formWebhook.toPlainText(),self.paymentMethod.currentText(),self.country_tab2.currentText() )
             
         self.delete_from_table2()
        

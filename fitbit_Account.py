@@ -87,30 +87,30 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
     try:
         browser = playwright.chromium.launch(headless=False)
         context = browser.new_context()
-        page = context.new_page()
-        page.goto("https://quik.email/en")
-        page.wait_for_timeout(20000)
-        email_test = page.locator("#trsh_mail").input_value()
+        # page = context.new_page()
+        # page.goto("https://quik.email/en")
+        # page.wait_for_timeout(20000)
+        # email_test = page.locator("#trsh_mail").input_value()
         # print(email)
         page1 = context.new_page()
         page1.goto(
             f"https://accounts.fitbit.com/signup?targetUrl=https%3A%2F%2Fwww.fitbit.com%2Fglobal%2Fjp%2Fhome")
         page1.get_by_placeholder("Your email address").click()
-        page1.get_by_placeholder("Your email address").fill(email_test)
+        page1.get_by_placeholder("Your email address").fill(email)
         page1.get_by_placeholder("Choose your password").click()
         page1.get_by_placeholder("Choose your password").fill(
             password)
         page1.get_by_label(
             "I agree to the Fitbit Terms of Service. Please also read the Privacy Policy including the Cookie Use statement.").check()
         page1.get_by_role("button", name="Join Fitbit").click()
-        page.wait_for_timeout(30000)
-        page.get_by_role("link", name="View").click()
-        with page.expect_popup() as page2_info:
-            page.frame_locator("#myIframe").get_by_role(
-                "link", name="Verify Your Email").click()
-        page2 = page2_info.value
-        page2.close()
-        # page1.wait_for_timeout(50000)
+        # page1.wait_for_timeout(30000)
+        # page.get_by_role("link", name="View").click()
+        # with page.expect_popup() as page2_info:
+        #     page.frame_locator("#myIframe").get_by_role(
+        #         "link", name="Verify Your Email").click()
+        # page2 = page2_info.value
+        # page2.close()
+        page1.wait_for_timeout(50000)
         page1.get_by_placeholder("First name").click()
         page1.wait_for_timeout(2000)
         page1.get_by_placeholder("First name").fill(first_name)
@@ -169,7 +169,7 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
             
         page1.wait_for_timeout(2000)
         page1.get_by_role("button", name="Submit").click()
-        page1.wait_for_timeout(200000)
+        page1.wait_for_timeout(2000)
         context.close()
         browser.close()
     except Exception as e:

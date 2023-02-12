@@ -10,6 +10,12 @@ def generate_japanese_phone_number():
   return int(f"{area_code}{first_part}{second_part}")
 
 
+def generate_uk_phone_number():
+    first_part = str(random.randint(1000, 9999))
+    second_part = str(random.randint(100000, 999999))
+    phone_number = first_part + second_part
+    return phone_number
+
 
 def generate_uk_address():
     counties = [
@@ -93,7 +99,7 @@ def Discord_webhook_Form_Filling(webhook_url,refrence,address_line_1,first_name,
             webhook.send(embed=embed)
 
 
-def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url) -> None:
+def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
@@ -101,35 +107,45 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
     while True:
         try:
             page.goto("https://www.fitbitionic.expertinquiry.com/")
-            page.get_by_label("Country").select_option(value='JP')
+            if country=='Japan':
+                page.get_by_label("Country").select_option(value='JP')
+            elif country=='United Kingdom':    
+                page.get_by_label("Country").select_option(value='GB')
             with page.expect_popup() as page1_info:
                 page.get_by_role("link", name="Register").click()
             page1 = page1_info.value
             page1.get_by_role(
-                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.click(timeout=1200000)
+                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.click(timeout=12000000)
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.fill(first_name)
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").nth(1).click()
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").nth(1).fill(last_name)
-            page1.get_by_placeholder("Enter Address Here to Search").click()
-            page1.get_by_placeholder(
-                "Enter Address Here to Search").fill(address_to_search)
+            if country=='Japan':
+                page1.get_by_placeholder("Enter Address Here to Search").click()
+                page1.get_by_placeholder(
+                    "Enter Address Here to Search").fill(address_to_search)
+            page.wait_for_timeout(3000)
             page1.get_by_placeholder("Address Line 1").click()
             page1.get_by_placeholder("Address Line 1").fill(address_line_1)
             page1.get_by_placeholder("Address Line 2").click()
             page1.get_by_placeholder("Address Line 2").fill(address_line_2)
             page1.get_by_placeholder("Post Code").click()
             page1.get_by_placeholder("Post Code").fill(postal_code)
-            page1.get_by_placeholder("City").click()
-            page1.get_by_placeholder("City").fill(city)
-            page1.get_by_placeholder("State").click()
-            page1.get_by_placeholder("State").fill(state)
+            if country=='Japan':
+                page1.get_by_placeholder("City").click()
+                page1.get_by_placeholder("City").fill(city)
+                page1.get_by_placeholder("State").click()
+                page1.get_by_placeholder("State").fill(state)
+            elif country=='United Kingdom':
+                page1.get_by_placeholder("Town").click()
+                page1.get_by_placeholder("Town").fill(city)
             page1.get_by_placeholder("Email Address", exact=True).click()
             page.wait_for_timeout(3000)
             page1.get_by_placeholder("Email Address", exact=True).type(
                 fitbit_email)
+            page.wait_for_timeout(3000)
             page1.get_by_placeholder(
                 "Confirm Email Address", exact=True).click()
             page.wait_for_timeout(3000)
@@ -147,20 +163,30 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
                 "Confirm Email Address").type(fitbit_email)
             page1.get_by_role(
                 "combobox", name="United States: +1").get_by_text("+1").click()
-            page1.get_by_role("option", name="Japan (日本)+81").click()
-            page.wait_for_timeout(2000)
-            page1.get_by_placeholder("__-____-____").click()
-            page.wait_for_timeout(2000)
-            page1.get_by_placeholder("__-____-____").type(phone_number)
+            if country=='Japan':
+                page1.get_by_role("option", name="Japan (日本)+81").click()
+                page.wait_for_timeout(2000)
+                page1.get_by_placeholder("__-____-____").click()
+                page.wait_for_timeout(2000)
+                page1.get_by_placeholder("__-____-____").type(phone_number)
+            elif country=='United Kingdom':
+                page1.get_by_role("option", name="United Kingdom+44").first.click()
+                page.wait_for_timeout(2000)
+                page1.get_by_placeholder("____ ______").click()
+                page.wait_for_timeout(2000)
+                page1.get_by_placeholder("____ ______").type(phone_number)
             page1.get_by_role(
                 "combobox", name="Preferred method of reimbursement").click()
-            page1.get_by_role("option", name="PayPal").click()
-            page1.locator("#email_RefundEmail").click()
-            page.wait_for_timeout(2000)
-            page1.locator("#email_RefundEmail").type(paypal_email)
-            page1.locator("#confirm_RefundEmail").click()
-            page.wait_for_timeout(2000)
-            page1.locator("#confirm_RefundEmail").type(paypal_email)
+            if paymentMethod=='PayPal':
+                page1.get_by_role("option", name="PayPal").click()
+                page1.locator("#email_RefundEmail").click()
+                page.wait_for_timeout(2000)
+                page1.locator("#email_RefundEmail").type(paypal_email)
+                page1.locator("#confirm_RefundEmail").click()
+                page.wait_for_timeout(2000)
+                page1.locator("#confirm_RefundEmail").type(paypal_email)
+            if paymentMethod=='MasterCard Debit Card':
+                 page1.get_by_role("option", name="Electronic MasterCard Debit Card").click()
             page1.get_by_text("Yes").click()
             page1.get_by_text("I Agree").click()
             page1.get_by_role("button", name="Next").click()
@@ -186,6 +212,6 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
 
 
 #
-def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url):
+def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country):
    with sync_playwright() as playwright:
-        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url)
+        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country)

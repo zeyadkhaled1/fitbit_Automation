@@ -99,8 +99,9 @@ def Discord_webhook_Form_Filling(webhook_url,refrence,address_line_1,first_name,
             webhook.send(embed=embed)
 
 
-def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country) -> None:
-    browser = playwright.chromium.launch(headless=False)
+def run(playwright: Playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country,headlessFlag) -> None:
+    Flag=True if headlessFlag=='Yes' else False
+    browser = playwright.chromium.launch(headless=Flag)
     context = browser.new_context()
     page = context.new_page()
     x = 0
@@ -117,11 +118,11 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.click(timeout=12000000)
             page1.get_by_role(
-                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.fill(first_name)
+                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").first.type(first_name)
             page1.get_by_role(
                 "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").nth(1).click()
             page1.get_by_role(
-                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").nth(1).fill(last_name)
+                "textbox", name="<input type=\"text\" class=\"form-control\" data-bind=\"value:Answer, attr:{maxlength: $root.getMaxLength(MaxLength), 'aria-label': Label, 'aria-required': Required}, event:{keydown: $root.validateTab}\" autocomplete=\"nothing\" aria-labelledby=\"TextTemplate\" />").nth(1).type(last_name)
             if country=='Japan':
                 page1.get_by_placeholder("Enter Address Here to Search").click()
                 page1.get_by_placeholder(
@@ -161,6 +162,7 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
             page.wait_for_timeout(2000)
             page1.get_by_placeholder(
                 "Confirm Email Address").type(fitbit_email)
+            page.wait_for_timeout(2000)
             page1.get_by_role(
                 "combobox", name="United States: +1").get_by_text("+1").click()
             if country=='Japan':
@@ -177,16 +179,20 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
                 page1.get_by_placeholder("____ ______").type(phone_number)
             page1.get_by_role(
                 "combobox", name="Preferred method of reimbursement").click()
+            page1.wait_for_timeout(2000)
             if paymentMethod=='PayPal':
                 page1.get_by_role("option", name="PayPal").click()
                 page1.locator("#email_RefundEmail").click()
-                page.wait_for_timeout(2000)
+                page1.wait_for_timeout(2000)
                 page1.locator("#email_RefundEmail").type(paypal_email)
                 page1.locator("#confirm_RefundEmail").click()
-                page.wait_for_timeout(2000)
+                page1.wait_for_timeout(2000)
                 page1.locator("#confirm_RefundEmail").type(paypal_email)
-            if paymentMethod=='MasterCard Debit Card':
+            elif paymentMethod=='MasterCard Debit Card':
                  page1.get_by_role("option", name="Electronic MasterCard Debit Card").click()
+            elif paymentMethod=='Google eGifts':
+                page1.get_by_role("option", name="Google eGift").click()
+            page1.wait_for_timeout(2000)
             page1.get_by_text("Yes").click()
             page1.get_by_text("I Agree").click()
             page1.get_by_role("button", name="Next").click()
@@ -212,6 +218,6 @@ def run(playwright: Playwright, first_name, last_name, address_line_1, address_l
 
 
 #
-def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country):
+def main_fill_form(first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country,headlessFlag):
    with sync_playwright() as playwright:
-        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country)
+        run(playwright, first_name, last_name, address_line_1, address_line_2, postal_code, city, state,fitbit_email,paypal_email,phone_number,address_to_search,webhook_url,paymentMethod,country,headlessFlag)

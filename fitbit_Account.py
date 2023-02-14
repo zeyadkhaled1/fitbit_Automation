@@ -83,9 +83,10 @@ def generate_pounds():
     return random.randint(100, 150)
 
 
-def run(playwright: Playwright, email, password, first_name, last_name, year, centimeters, pounds,webhook,country) -> None:
+def run(playwright: Playwright, email, password, first_name, last_name, year, centimeters, pounds,webhook,country,headlessFlag) -> None:
+    Flag=True if headlessFlag=='Yes' else False
     try:
-        browser = playwright.chromium.launch(headless=False)
+        browser = playwright.chromium.launch(headless=Flag)
         context = browser.new_context()
         # page = context.new_page()
         # page.goto("https://quik.email/en")
@@ -177,10 +178,10 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
         pass
 
 
-def main_account_creation(email, password, first_name, last_name, year, centimeters, pounds,webhook,country):
+def main_account_creation(email, password, first_name, last_name, year, centimeters, pounds,webhook,country,headlessFlag):
     with sync_playwright() as playwright:
         run(playwright, email, password, first_name,
-            last_name, year, centimeters, pounds,webhook,country)
+            last_name, year, centimeters, pounds,webhook,country,headlessFlag)
 
 
 # main_account_creation('mango','magolol123@de7k','bankai','minazuki','1996','170','200')

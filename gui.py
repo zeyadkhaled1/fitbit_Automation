@@ -79,6 +79,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.country.addItem("")
         self.country.addItem("")
         self.country.addItem("")
+        # 
+        self.browser_mode_tab1 = QtWidgets.QComboBox(self.tab_1)
+        self.browser_mode_tab1.setGeometry(QtCore.QRect(800,170, 231, 31))
+        self.browser_mode_tab1.setObjectName("browser_mode_tab1")
+        self.browser_mode_tab1.addItem("No")
+        self.browser_mode_tab1.addItem("Yes")
+        self.label_browser_mode = QtWidgets.QLabel(self.tab_1)
+        self.label_browser_mode.setGeometry(QtCore.QRect(680, 170, 111, 21))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        self.label_browser_mode.setFont(font)
+        self.label_browser_mode.setObjectName("label_browser_mode")
+        # 
+ 
         self.insert = QtWidgets.QPushButton(self.tab_1)
         self.insert.setGeometry(QtCore.QRect(490, 150, 111, 61))
         self.insert.setObjectName("insert")
@@ -207,6 +221,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         font.setPointSize(13)
         self.label_country_tab2.setFont(font)
         self.label_country_tab2.setObjectName("label_country_tab2")
+        # 
+        self.browser_mode_tab2 = QtWidgets.QComboBox(self.tab_2)
+        self.browser_mode_tab2.setGeometry(QtCore.QRect(690,30, 231, 31))
+        self.browser_mode_tab2.setObjectName("browser_mode_tab2")
+        self.browser_mode_tab2.addItem("No")
+        self.browser_mode_tab2.addItem("Yes")
+        self.label_browser_mode2 = QtWidgets.QLabel(self.tab_2)
+        self.label_browser_mode2.setGeometry(QtCore.QRect(510, 30, 111, 21))
+        font = QtGui.QFont()
+        font.setPointSize(13)
+        self.label_browser_mode2.setFont(font)
+        self.label_browser_mode2.setObjectName("label_browser_mode2")
+        # 
         self.label_3 = QtWidgets.QLabel(self.tab_2)
         self.label_3.setGeometry(QtCore.QRect(10, 280, 171, 31))
         font = QtGui.QFont()
@@ -399,6 +426,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.submit1.setText(_translate("self", "Submit"))
         self.label.setText(_translate("self", "Emails"))
         self.label_33.setText(_translate("self", "Country"))
+        self.label_browser_mode.setText(_translate("self","Headless:"))
+        self.label_browser_mode2.setText(_translate("self","Headless:"))
         self.label_22.setText(_translate("self", "First Name"))
         self.label_23.setText(_translate("self", "Last Name"))
         self.label_24.setText(_translate("self", "Password"))
@@ -483,6 +512,61 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.State.setDisabled(False)
             self.ch4.setDisabled(False)
             
+    def append_to_json_file_Account_Creation(self,email, password, first_name, last_name, year_of_birth, length, weight, webhook, country):
+        file_path='data_submitted_account_creation.json'
+        data = {
+        'email': email,
+        'password': password,
+        'first_name': first_name,
+        'last_name': last_name,
+        'year_of_birth': year_of_birth,
+        'length': length,
+        'weight': weight,
+        'webhook': webhook,
+        'country': country,
+        }
+        try:
+            with open( file_path,'r') as f:
+               all_entries = json.load(f)['all_entries']
+        except FileNotFoundError:
+            all_entries = []
+        except Exception as e:
+            print(e)
+        # append the new data
+        all_entries.append(data)
+        # save the updated data back to the file
+        with open(file_path, 'w') as f:
+            json.dump({'all_entries': all_entries},f,indent=4)
+            
+    def append_to_json_file_form(self,first_name,last_name,address_line1,address_line2,postcode,city,state,email,payment_email,phone,formWebhook,payment_method,country):
+        file_path='data_submitted_form.json'
+        data = {
+        'email': email,
+        'first_name': first_name,
+        'last_name': last_name,
+        'address_line1': address_line1,
+        'address_line2': address_line2,
+        'postcode': postcode,
+        'city': city,
+        'state':state,
+        'payment_email':payment_email,
+        'payment_method':payment_method,
+        'phone':phone,
+        'webhook': formWebhook,
+        'country': country,
+        }
+        try:
+            with open( file_path,'r') as f:
+               all_entries = json.load(f)['all_entries']
+        except FileNotFoundError:
+            all_entries = []
+        except Exception as e:
+            print(e)
+        # append the new data
+        all_entries.append(data)
+        # save the updated data back to the file
+        with open(file_path, 'w') as f:
+            json.dump({'all_entries': all_entries},f,indent=4)
         
 
     def delete_from_table2(self):
@@ -625,14 +709,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def set_progress2(self, value=0):
         self.progressBar_2.setValue(value)
     
-    def start_thread1(self,table_1_data,email,password,first_name,last_name,year,centimeters,pounds,webhook,country):
-        thread = FunctionThread(main_account_creation,email,password,first_name,last_name,year,centimeters,pounds,webhook,country)
+    def start_thread1(self,table_1_data,email,password,first_name,last_name,year,centimeters,pounds,webhook,country,headlessFlag):
+        thread = FunctionThread(main_account_creation,email,password,first_name,last_name,year,centimeters,pounds,webhook,country,headlessFlag)
         thread.finished.connect(partial(self.increment_var_progress2,table_1_data))
         self.threads.append(thread)
         thread.start()
         
-    def start_thread2(self,table_2_data,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country):
-        thread = FunctionThread(main_fill_form,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country)
+    def start_thread2(self,table_2_data,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country,headlessFlag):
+        thread = FunctionThread(main_fill_form,first_name2,last_name2,address_line1,address_line2,postcode,city,state,email,payment_email,phone,address_to_search,formwebhook,paymentMethod,country,headlessFlag)
         thread.finished.connect(partial(self.increment_var_progress2,table_2_data))
         self.threads.append(thread)
         thread.start()
@@ -640,7 +724,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def increment_var_progress1(self,table_1_data):
         global x
         x+=1
-        self.set_progress1(int(x/len(table_1_data))*100)
+        self.set_progress1(x // len(table_1_data) * 100)
         
     def increment_var_progress2(self,table_2_data):
         global y
@@ -650,9 +734,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         self.save_table1_data()
         self.save_table2_data()
-        for thread in self.threads:
-            thread.quit()
-            thread.wait()
+        # for thread in self.threads:
+        #     if thread.isRunning():
+        #         thread.quit()
+        #         thread.wait()
         event.accept()
     
     def submitButton1(self):
@@ -686,7 +771,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     self.data.first_name1=generate_English_name()
                 else:
                     self.data.first_name1 = self.firstName_2.toPlainText()
-            
+
                 if (self.ch10.checkState() and self.data.country =='Japan'):
                     self.data.last_name1=generate_Japanese_name()
                 elif (self.ch10.checkState() and self.data.country =='United Kingdom'):
@@ -697,11 +782,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                     self.data.password=generate_password()
                 else:
                     self.data.password = self.password.toPlainText()
-                
-                
-                self.start_thread1(self.data.table1_emails,email,self.data.password,self.data.first_name1,self.data.last_name1,generate_year_of_birth(),generate_centimeters(),generate_pounds(),self.AccountCreationWebhook.toPlainText(),self.country.currentText())
-        except:
-            pass
+
+                length=generate_centimeters()
+                year_of_birth=generate_year_of_birth()
+                weight=generate_pounds()
+                self.append_to_json_file_Account_Creation(email,self.data.password,self.data.first_name1,self.data.last_name1,year_of_birth,length,weight,self.AccountCreationWebhook.toPlainText(),self.country.currentText())
+                self.start_thread1(self.data.table1_emails,email,self.data.password,self.data.first_name1,self.data.last_name1,year_of_birth,length,weight,self.AccountCreationWebhook.toPlainText(),self.country.currentText(),self.browser_mode_tab1.currentText())
+        except Exception as e:
+            print(e)
         self.transferDataToTable2()
 
 
@@ -742,7 +830,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             elif (self.ch1.checkState() and self.country_tab2.currentText() == "United Kingdom"):
                         self.data.first_name2=generate_English_name()
             else:
-                    self.data.first_name2 = self.firstName_2.toPlainText()
+                    self.data.first_name2 = self.firstName.toPlainText()
             if (self.ch2.checkState()):
                         self.data.address_line1=address_line_1
             else:
@@ -760,7 +848,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             elif (self.ch5.checkState() and self.country_tab2.currentText() == "United Kingdom"):
                         self.data.last_name2=generate_English_name()          
             else:
-                    self.data.state = self.State.toPlainText()
+                    self.data.last_name2 = self.lastName.toPlainText()
             if (self.ch6.checkState()):
                         self.data.address_line2=address_line_2
             else:
@@ -774,7 +862,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             else:
                     self.data.phone = self.phone.toPlainText()
             self.data.payment_email=self.paypalEmail.toPlainText()
-            self.start_thread2(self.data.table2_emails,self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,str(self.data.postcode),self.data.city,self.data.state,email,self.data.payment_email,str(self.data.phone),self.data.address_line1,self.formWebhook.toPlainText(),self.paymentMethod.currentText(),self.country_tab2.currentText() )
+            self.append_to_json_file_form(self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,str(self.data.postcode),self.data.city,self.data.state,email,self.data.payment_email,str(self.data.phone),self.formWebhook.toPlainText(),self.paymentMethod.currentText(),self.country_tab2.currentText())
+            self.start_thread2(self.data.table2_emails,self.data.first_name2,self.data.last_name2,self.data.address_line1,self.data.address_line2,str(self.data.postcode),self.data.city,self.data.state,email,self.data.payment_email,str(self.data.phone),self.data.address_line1,self.formWebhook.toPlainText(),self.paymentMethod.currentText(),self.country_tab2.currentText(),self.browser_mode_tab2.currentText())
             
         self.delete_from_table2()
        

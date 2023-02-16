@@ -4,7 +4,7 @@ import string
 from discord import SyncWebhook, Embed
 
 
-def Discord_webhook_Account_Creation(email, password, first_name, last_name, year, centimeters, pounds,webhook_url,country) -> None:
+def Discord_webhook_Account_Creation(email, password, first_name, last_name, year, centimeters, pounds, webhook_url, country) -> None:
     webhook = SyncWebhook.from_url(webhook_url)
     embed = Embed(title=f"FitBot{country}", color=0xFF5733)
     embed.add_field(name="Account Creation", value='', inline=False)
@@ -18,40 +18,46 @@ def Discord_webhook_Account_Creation(email, password, first_name, last_name, yea
     # Send a message to the server
     webhook.send(embed=embed)
 
+
 def generate_password(length=10):
-    password = []
     characters = string.ascii_letters + string.digits + string.punctuation
-    for _ in range(length):
-        password.append(random.choice(characters))
+    password = [random.choice(characters) for _ in range(length)]
     return "".join(password)
+
+
+def generate_Taiwan_name() -> str:
+    names = ["Chen", "Lin", "Wang", "Yang", "Chang", "Huang", "Hsu", "Liu", "Tsai", "Cheng", "Chu", "Wu", "Yu", "Li", "Chao", "Kuo", "Yeh", "Lai", "Hsieh", "Chiang", "Fang", "Tang", "Shih", "Yen", "Hsu", "Hsieh", "Tseng", "Shen", "Pan", "Liao", "Wei", "Chung", "Kao", "Hong", "Su", "Chiu", "Yan", "Chen", "Lai", "Wang", "Lee", "Hsu", "Huang", "Chang", "Chu", "Yang", "Tsai", "Chen", "Lin", "Wang", "Yang", "Chang", "Huang", "Hsu", "Liu", "Tsai", "Cheng", "Chu", "Wu", "Yu", "Li", "Chao", "Kuo", "Yeh", "Lai", "Hsieh", "Chiang", "Fang", "Tang", "Shih", "Yen", "Hsu", "Hsieh", "Tseng", "Shen", "Pan", "Liao", "Wei", "Chung", "Kao", "Hong", "Su", "Chiu", "Yan", "Chen", "Lai", "Wang", "Lee", "Hsu",
+             "Huang", "Chang", "Chu", "Yang", "Tsai", "Chen", "Lin", "Wang", "Yang", "Chang", "Huang", "Hsu", "Liu", "Tsai", "Cheng", "Chu", "Wu", "Yu", "Li", "Chao", "Kuo", "Yeh", "Lai", "Hsieh", "Chiang", "Fang", "Tang", "Shih", "Yen", "Hsu", "Hsieh", "Tseng", "Shen", "Pan", "Liao", "Wei", "Chung", "Kao", "Hong", "Su", "Chiu", "Yan", "Chen", "Lai", "Wang", "Lee", "Hsu", "Huang", "Chang", "Chu", "Yang", "Tsai", "Chen", "Lin", "Wang", "Yang", "Chang", "Huang", "Hsu", "Liu", "Tsai", "Cheng", "Chu", "Wu", "Yu", "Li", "Chao", "Kuo", "Yeh", "Lai", "Hsieh", "Chiang", "Fang", "Tang", "Shih", "Yen", "Hsu", "Hsieh", "Tseng", "Shen", "Pan", "Liao", "Wei", "Chung", "Kao", "Hong", "Su", "Chiu", "Yan"]
+    return random.choice(names)
 
 def generate_English_name() -> str:
     names = [
-        "Oliver","Harry","Jack","Charlie","Craig","Crane","Crawford",
-        "George","Noah","William","James","Alfie","Leo","Henry","Oscar","Alexander","Ethan","Arthur","Freddie","Max","Isaac","Jacob","Adam",
-        "Liam","Thomas","Sebastian","Lucas","Mason","Harrison","Samuel","Mohammed","Benjamin",
-        "Daniel","Elijah","Joseph","Mohammed","Dylan","Muhammad","Edward","Jude","Jenson",
-        "Toby","Theo","Louis","Elliott","Riley","Felix","Archie","Finlay","Finley","Harvey",
-        "Hayden","Aiden","Connor","Zachary","Evan","Ryan","Luke","Matthew","Jayden","Jake",
-        "Nathan","Caleb","Callum","Jameson","Logan","Adam","Teddy","Theodore","Albert","Albie",
-        "Alfred","Alistair","Andrew","Angus","Anthony","Arnold","Aston","Augustus","Austin",
-        "Balthazar","Barnaby","Barry","Basil","Benedict","Benjamin","Bernard","Bertie",
-        "Bertram","Bill","Billy","Blair","Blaise","Boris","Boston","Bradley","Braxton","Brayden",
-        "Brendan","Brenton","Bret","Brett","Brian","Brice","Bridger","Brighton","Britton","Brock","Brodie",
-        "Brody","Brooklyn","Bruce","Bruno","Bryan","Bryant","Bryce","Bryson","Byron","Cadby",
-        "Caden","Caelan","Cai","Caiden","Cal","Calder","Caleb","Calum","Camden", "Cameron",
-        "Campbell","Carl","Carlton","Carsen","Carson","Carter","Cary","Casey","Cash","Cason",
-        "Caspian","Cassius","Castiel","Castor","Cato","Cavan","Cayden","Cedric","Cesar",
-        "Chad","Chandler","Channing","Charles","Charley","Charlie","Charlotte","Chase",
-        "Chauncey","Chester","Chevy","Chip","Chris","Christian","Christopher","Chuck",
-        "Cian","Ciaran","Cillian","Clarence","Clark","Claud","Claude","Clay","Clayton",
-        "Clement","Cliff","Clifford","Clifton","Clint","Clinton","Clyde","Cobie","Coby",
-        "Codey","Coen","Cohan","Cohen","Colby","Cole","Colin","Collin","Colt","Colton","Conan",
-        "Conner","Connor","Conor","Conrad","Cooper","Copen","Corbin","Corey","Cormac","Cornelius","Cornell","Cortez","Cory","Cosmo",
-        "Cristian","Cristobal","Crosby","Cruz","Cullen","Curt","Curtis","Cuthbert","Cyril",
+        "Oliver", "Harry", "Jack", "Charlie", "Craig", "Crane", "Crawford",
+        "George", "Noah", "William", "James", "Alfie", "Leo", "Henry", "Oscar", "Alexander", "Ethan", "Arthur", "Freddie", "Max", "Isaac", "Jacob", "Adam",
+        "Liam", "Thomas", "Sebastian", "Lucas", "Mason", "Harrison", "Samuel", "Mohammed", "Benjamin",
+        "Daniel", "Elijah", "Joseph", "Mohammed", "Dylan", "Muhammad", "Edward", "Jude", "Jenson",
+        "Toby", "Theo", "Louis", "Elliott", "Riley", "Felix", "Archie", "Finlay", "Finley", "Harvey",
+        "Hayden", "Aiden", "Connor", "Zachary", "Evan", "Ryan", "Luke", "Matthew", "Jayden", "Jake",
+        "Nathan", "Caleb", "Callum", "Jameson", "Logan", "Adam", "Teddy", "Theodore", "Albert", "Albie",
+        "Alfred", "Alistair", "Andrew", "Angus", "Anthony", "Arnold", "Aston", "Augustus", "Austin",
+        "Balthazar", "Barnaby", "Barry", "Basil", "Benedict", "Benjamin", "Bernard", "Bertie",
+        "Bertram", "Bill", "Billy", "Blair", "Blaise", "Boris", "Boston", "Bradley", "Braxton", "Brayden",
+        "Brendan", "Brenton", "Bret", "Brett", "Brian", "Brice", "Bridger", "Brighton", "Britton", "Brock", "Brodie",
+        "Brody", "Brooklyn", "Bruce", "Bruno", "Bryan", "Bryant", "Bryce", "Bryson", "Byron", "Cadby",
+        "Caden", "Caelan", "Cai", "Caiden", "Cal", "Calder", "Caleb", "Calum", "Camden", "Cameron",
+        "Campbell", "Carl", "Carlton", "Carsen", "Carson", "Carter", "Cary", "Casey", "Cash", "Cason",
+        "Caspian", "Cassius", "Castiel", "Castor", "Cato", "Cavan", "Cayden", "Cedric", "Cesar",
+        "Chad", "Chandler", "Channing", "Charles", "Charley", "Charlie", "Charlotte", "Chase",
+        "Chauncey", "Chester", "Chevy", "Chip", "Chris", "Christian", "Christopher", "Chuck",
+        "Cian", "Ciaran", "Cillian", "Clarence", "Clark", "Claud", "Claude", "Clay", "Clayton",
+        "Clement", "Cliff", "Clifford", "Clifton", "Clint", "Clinton", "Clyde", "Cobie", "Coby",
+        "Codey", "Coen", "Cohan", "Cohen", "Colby", "Cole", "Colin", "Collin", "Colt", "Colton", "Conan",
+        "Conner", "Connor", "Conor", "Conrad", "Cooper", "Copen", "Corbin", "Corey", "Cormac", "Cornelius", "Cornell", "Cortez", "Cory", "Cosmo",
+        "Cristian", "Cristobal", "Crosby", "Cruz", "Cullen", "Curt", "Curtis", "Cuthbert", "Cyril",
         "Cyrus",  "Daniel",    "David",    "Edward",    "Elijah",    "Ethan",    "Finley",    "Frankie",    "Freddie",    "Gabriel",    "George",    "Harvey",    "Henry",    "Isaac",    "Jack",    "Jacob",    "James",    "Jayden",    "John",    "Jonathan",    "Joseph",    "Joshua",    "Leo",    "Lewis",    "Liam",    "Logan",    "Lucas",    "Mason",    "Max",    "Mohammed",    "Muhammad",    "Noah",    "Oliver",    "Oscar",    "Owen",    "Parker",    "Reggie",    "Rhys",    "Riley",    "Robert",    "Roman",    "Rory",    "Ruben",    "Ryan",    "Samuel",    "Sebastian",    "Sonny",    "Theo",    "Thomas",    "Toby",    "Tommy",    "Tyler",    "William",    "Wyatt"]
 
     return random.choice(names)
+
 
 def generate_Japanese_name() -> str:
     names = ['Asahi', 'Akihiko', 'Akira', 'Aoki', 'Asa',
@@ -83,8 +89,9 @@ def generate_pounds():
     return random.randint(100, 150)
 
 
-def run(playwright: Playwright, email, password, first_name, last_name, year, centimeters, pounds,webhook,country,headlessFlag) -> None:
-    Flag=True if headlessFlag=='Yes' else False
+def run(playwright: Playwright, email, password, first_name, last_name, year, centimeters, pounds, webhook, country, headlessFlag) -> None:
+    # sourcery skip: extract-duplicate-method
+    Flag = headlessFlag == 'Yes'
     try:
         browser = playwright.chromium.launch(headless=Flag)
         context = browser.new_context()
@@ -95,7 +102,8 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
         # print(email)
         page1 = context.new_page()
         page1.goto(
-            f"https://accounts.fitbit.com/signup?targetUrl=https%3A%2F%2Fwww.fitbit.com%2Fglobal%2Fjp%2Fhome")
+            r"https://accounts.fitbit.com/signup?targetUrl=https%3A%2F%2Fwww.fitbit.com%2Fglobal%2Fjp%2Fhome"
+        )
         page1.get_by_placeholder("Your email address").click()
         page1.get_by_placeholder("Your email address").fill(email)
         page1.get_by_placeholder("Choose your password").click()
@@ -141,33 +149,38 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
         page1.get_by_role("button", name="Create Account").click()
         page1.wait_for_timeout(7000)
         Discord_webhook_Account_Creation(
-            email, password, first_name, last_name, year, centimeters, pounds,webhook,country)
+            email, password, first_name, last_name, year, centimeters, pounds, webhook, country)
         # ---------------------
         page1.goto("https://www.fitbit.com/settings/profile")
         page1.wait_for_timeout(2000)
-        if country =='Japan':
+        if country == 'Japan':
             page1.get_by_role("combobox", name="COUNTRY").select_option("JP")
-        elif country =='United Kingdom':
+        elif country == 'United Kingdom':
             page1.get_by_role("combobox", name="COUNTRY").select_option("GB")
+        elif country == 'Taiwan':
+            page1.get_by_role("combobox", name="COUNTRY").select_option("TW")
         page1.wait_for_timeout(2000)
         page1.locator('//*[@id="language-by-region/country"]').click()
         page1.wait_for_timeout(2000)
-        if country =='Japan':
+        if country == 'Japan':
             page1.get_by_role(
                 "region", name="LANGUAGE BY REGION/COUNTRY").get_by_role("combobox").select_option("ja_JP")
-        if country =='United Kingdom':
+        elif country == 'United Kingdom':
             page1.get_by_role(
                 "region", name="LANGUAGE BY REGION/COUNTRY").get_by_role("combobox").select_option("en_GB")
+
         page1.wait_for_timeout(2000)
         page1.query_selector("h2#timezone").click()
         page1.wait_for_timeout(2000)
-        if country=='Japan':
+        if country == 'Japan':
             page1.get_by_role("region", name="TIMEZONE").get_by_role(
                 "combobox").select_option("Asia/Tokyo")
-        elif country=='United Kingdom':
+        elif country == 'United Kingdom':
             page1.get_by_role("region", name="TIMEZONE").get_by_role(
                 "combobox").select_option("Europe/London")
-            
+        elif country == 'Taiwan':
+            page1.get_by_role("region", name="TIMEZONE").get_by_role(
+                "combobox").select_option("Asia/Taipei")
         page1.wait_for_timeout(2000)
         page1.get_by_role("button", name="Submit").click()
         page1.wait_for_timeout(2000)
@@ -175,13 +188,12 @@ def run(playwright: Playwright, email, password, first_name, last_name, year, ce
         browser.close()
     except Exception as e:
         print(e)
-        pass
 
 
-def main_account_creation(email, password, first_name, last_name, year, centimeters, pounds,webhook,country,headlessFlag):
+def main_account_creation(email, password, first_name, last_name, year, centimeters, pounds, webhook, country, headlessFlag):
     with sync_playwright() as playwright:
         run(playwright, email, password, first_name,
-            last_name, year, centimeters, pounds,webhook,country,headlessFlag)
+            last_name, year, centimeters, pounds, webhook, country, headlessFlag)
 
 
 # main_account_creation('mango','magolol123@de7k','bankai','minazuki','1996','170','200')
